@@ -36,8 +36,20 @@ app.use('/api/polling-units', pollingUnitRoutes);
 app.use('/api/parties', partyRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 
+const path = require('path');
+const fs = require('fs');
+
 // Catch 404 for undefined API routes
 app.use('/api/*', notFoundHandler);
+
+// Serve static frontend assets if built
+const clientDistPath = path.join(__dirname, '../../client/dist');
+if (fs.existsSync(clientDistPath)) {
+  app.use(express.static(clientDistPath));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(clientDistPath, 'index.html'));
+  });
+}
 
 // Centralized error handler
 app.use(errorHandler);
